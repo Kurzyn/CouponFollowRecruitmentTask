@@ -1,3 +1,5 @@
+using Ninject;
+using OpenQA.Selenium;
 
 //"IAP" parallelization added thru anotation due to lack of support of .runsettings on Mac and in Visual Studio Code
 //https://learn.microsoft.com/en-us/visualstudio/test/configure-unit-tests-by-using-a-dot-runsettings-file?view=vs-2022
@@ -8,6 +10,20 @@ namespace CouponFollowRecruitmentTask
     [TestClass]
     public class UnitTest1 : BaseFixture
     {
+        [TestInitialize]
+        public void Init()
+        {
+
+        }
+
+        [TestCleanup]
+        public void CleanUp()
+        {
+            var driver = kernel.Get<IWebDriver>();
+            driver?.Quit();
+            kernel.Dispose();
+        }
+
         [TestMethod]
         public void TestMethod1()
         {
