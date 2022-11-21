@@ -16,14 +16,6 @@ namespace CouponFollowRecruitmentTask
 
         }
 
-        [TestCleanup]
-        public void CleanUp()
-        {
-            var driver = kernel.Get<IWebDriver>();
-            driver?.Quit();
-            kernel.Dispose();
-        }
-
         [TestMethod]
         public void TestMethod1()
         {
