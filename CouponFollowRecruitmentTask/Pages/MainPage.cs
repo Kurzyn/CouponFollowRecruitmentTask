@@ -10,6 +10,15 @@ namespace CouponFollowRecruitmentTask.Pages
     
     public class MainPage
     {
+        private By slideElement = By.CssSelector("div[class*=swiper-slide-]");
+        private By activeElement = By.CssSelector("div[class*=swiper-slide-active]");
+        private By prevElement = By.CssSelector("div[class*=swiper-slide-prev]");
+        private By nextElement = By.CssSelector("div[class*=swiper-slide-next]");
+        private By todayTrendingDeals = By.CssSelector("section[class*=trending-deals] article");
+
+        private IReadOnlyCollection<IWebElement> SlideElements => Driver.FindElements(slideElement);
+        private IReadOnlyCollection<IWebElement> TrendingDealsElements => Driver.FindElements(todayTrendingDeals);
+        
         private IWebDriver Driver { get; }
         
         public MainPage(IWebDriver driver)
@@ -21,5 +30,11 @@ namespace CouponFollowRecruitmentTask.Pages
         {
             Driver.Navigate().GoToUrl("https://couponfollow.com");
         }
+
+        public IReadOnlyCollection<IWebElement> GetCouponsFromCarusel() => SlideElements;
+
+        public IReadOnlyCollection<IWebElement> GetTodayTrendingDeals() => TrendingDealsElements;
+
+
     }
 }
