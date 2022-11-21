@@ -2,7 +2,7 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
-namespace CouponFollowRecruitmentTask
+namespace CouponFollowRecruitmentTask.Infrastructure
 {
     internal class WebDriverProvider : Provider<IWebDriver>
     {

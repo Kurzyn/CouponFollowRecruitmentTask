@@ -1,7 +1,7 @@
 ﻿using Ninject.Modules;
 using OpenQA.Selenium;
 
-namespace CouponFollowRecruitmentTask
+namespace CouponFollowRecruitmentTask.Infrastructure
 {
     internal class BrowserModule : NinjectModule
     {
