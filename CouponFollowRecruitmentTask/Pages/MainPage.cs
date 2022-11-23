@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace CouponFollowRecruitmentTask.Pages
@@ -50,19 +51,18 @@ namespace CouponFollowRecruitmentTask.Pages
 
         internal IEnumerable<double> GetPercentElementsValuesOnStaffPicks()
         {
-            //that patter is partially true
+            List<double> parsed = new();
             var searchPattern = @"\S?\d+(.\d+)?";
 
             var textValues = StaffPicksTitleElements.Select(x => x.Text.ToLowerInvariant());
             var percentsValues = textValues.Where(x => Regex.IsMatch(x, @"[%]"));
             var cleanedUpValues = percentsValues.Select(x => x.Replace("save", string.Empty).Replace("off", string.Empty).Trim());
-            var parsed = cleanedUpValues.Select(x =>
+            foreach(var x in cleanedUpValues)
             {
-                if (double.TryParse(Regex.Match(x, searchPattern).Value, out double percetnage))
+                if (!double.TryParse(Regex.Match(x, searchPattern).Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double percetnage))
                     throw new Exception($"Value on coupon is '{x}' and it's wrong for percetage type discount");
-                return percetnage;
-            });
-
+                parsed.Add(percetnage);
+            }
             return parsed;
         }
 
@@ -99,7 +99,7 @@ namespace CouponFollowRecruitmentTask.Pages
                         .Replace("take", string.Empty)
                         .Replace("off", string.Empty).Trim();
 
-                    if (!double.TryParse(titleText, out parsed))
+                    if (!double.TryParse(titleText, NumberStyles.Any, CultureInfo.InvariantCulture, out parsed))
                         throw new Exception($"Value on coupon for '{monetaryElement.Key}' has wrong value {titleText}");
                     results.Add(monetaryElement.Key, parsed);
                 }
