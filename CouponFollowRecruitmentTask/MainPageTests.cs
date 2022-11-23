@@ -101,5 +101,15 @@ namespace CouponFollowRecruitmentTask
             mainPage.OpenMainPage();
             mainPage.GetNotMatchingCoupons().Should().BeNullOrEmpty("coupons should have title only matching assumptions");
         }
+
+        [TestMethod]
+        [TestCategory("Test for task 4.")]
+        public void ShouldBeMovedToSiteAfterClickingCoupon()
+        {
+            mainPage.OpenMainPage();
+            var couponDomain = mainPage.SearchForExisitingStore();
+            mainPage.GetCurrentUrl().Should().Contain(couponDomain);
+            
+        }
     }
 }

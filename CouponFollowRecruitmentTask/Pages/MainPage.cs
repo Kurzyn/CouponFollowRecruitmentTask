@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -143,5 +144,20 @@ namespace CouponFollowRecruitmentTask.Pages
             }
             return results;
         }
+
+        internal string SearchForExisitingStore()
+        {
+            var choosenOne = StaffPicksDiv.First();
+            var domain = choosenOne.GetDomAttribute(dataDomain);
+
+            choosenOne.Click();
+            
+            WebDriverWait webDriverWait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
+            webDriverWait.Until(drv => ((IJavaScriptExecutor)drv).ExecuteScript("return document.readyState").Equals("complete"));
+            Driver.SwitchTo().Window(Driver.WindowHandles.Last());
+            return domain; 
+        }
+
+        internal string GetCurrentUrl() => Driver.Url;
     }
 }
