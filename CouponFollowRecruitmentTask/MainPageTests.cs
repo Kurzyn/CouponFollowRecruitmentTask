@@ -12,11 +12,13 @@ namespace CouponFollowRecruitmentTask
     public class MainPageTests : BaseFixture
     {
         MainPage mainPage;
+        SearchResultPage searchResultPage;
 
         [TestInitialize]
         public void Init()
         {
             mainPage = kernel.Get<MainPage>();
+            searchResultPage = kernel.Get<SearchResultPage>();
         }
 
         [TestMethod]
@@ -107,9 +109,11 @@ namespace CouponFollowRecruitmentTask
         public void ShouldBeMovedToSiteAfterClickingCoupon()
         {
             mainPage.OpenMainPage();
-            var couponDomain = mainPage.SearchForExisitingStore();
+            var couponDomain = mainPage.GetExisitingStoreFromStaffPicks();
+            mainPage.SearchForCoupon(couponDomain);
+            searchResultPage.OpenFirstResult();
             mainPage.GetCurrentUrl().Should().Contain(couponDomain);
-            
+
         }
     }
 }

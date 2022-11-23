@@ -1,5 +1,7 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -20,6 +22,8 @@ namespace CouponFollowRecruitmentTask.Pages
         private IReadOnlyCollection<IWebElement> TrendingDealsElements => Driver.FindElements(todayTrendingDeals);
         private IReadOnlyCollection<IWebElement> StaffPicksTitleElements => Driver.FindElements(By.CssSelector("div[class=staff-pick] a p.title"));
         private IReadOnlyCollection<IWebElement> StaffPicksDiv => Driver.FindElements(By.CssSelector("div[class='staff-pick'] a"));
+
+        private IWebElement SearchInput => Driver.FindElement(By.CssSelector("input[data-func=openSearch]"));
 
         private IWebDriver Driver { get; }
 
@@ -145,19 +149,33 @@ namespace CouponFollowRecruitmentTask.Pages
             return results;
         }
 
-        internal string SearchForExisitingStore()
-        {
-            var choosenOne = StaffPicksDiv.First();
-            var domain = choosenOne.GetDomAttribute(dataDomain);
-
-            choosenOne.Click();
-            
-            WebDriverWait webDriverWait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
-            webDriverWait.Until(drv => ((IJavaScriptExecutor)drv).ExecuteScript("return document.readyState").Equals("complete"));
-            Driver.SwitchTo().Window(Driver.WindowHandles.Last());
-            return domain; 
-        }
+        internal string GetExisitingStoreFromStaffPicks() => StaffPicksDiv.First().GetDomAttribute(dataDomain);
 
         internal string GetCurrentUrl() => Driver.Url;
+
+        internal void SearchForCoupon(string couponDomain)
+        {
+            //ifology for mobile
+            //SearchMobile(couponDomain);
+            SearchInput.Click();
+            SearchInput.SendKeys(couponDomain);
+
+            WebDriverWait webDriverWait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
+            webDriverWait.Until(ExpectedConditions.ElementExists(By.CssSelector("li a[data-domain]")));
+            Driver.FindElement(By.CssSelector("li a[data-domain]")).Click();
+            Driver.SwitchTo().Window(Driver.WindowHandles.Last());
+            SearchInput.SendKeys(Keys.Enter);
+        }
+
+        private void SearchMobile(string couponDomain)
+        {
+            Driver.FindElement(By.CssSelector("button#openSearch")).Click();
+            Driver.FindElement(By.CssSelector("input.mobile-search-input")).SendKeys(couponDomain);
+
+            WebDriverWait webDriverWait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
+            webDriverWait.Until(ExpectedConditions.ElementExists(By.CssSelector("li a[data-domain]")));
+            Driver.FindElement(By.CssSelector("li a[data-domain]")).Click();
+            Driver.SwitchTo().Window(Driver.WindowHandles.Last());
+        }
     }
 }
