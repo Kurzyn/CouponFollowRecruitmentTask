@@ -1,25 +1,23 @@
 ﻿using OpenQA.Selenium;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace CouponFollowRecruitmentTask.Pages
 {
 
     public class MainPage
     {
+        private readonly string dataDomain = "data-domain";
         private By slideElement = By.CssSelector("div[class*=swiper-slide-]");
         private By activeElement = By.CssSelector("div[class*=swiper-slide-active]");
         private By prevElement = By.CssSelector("div[class*=swiper-slide-prev]");
         private By nextElement = By.CssSelector("div[class*=swiper-slide-next]");
         private By todayTrendingDeals = By.CssSelector("section[class*=trending-deals] article");
+        private By couponTitleLocator = By.CssSelector("p.title");
 
         private IReadOnlyCollection<IWebElement> SlideElements => Driver.FindElements(slideElement);
         private IReadOnlyCollection<IWebElement> TrendingDealsElements => Driver.FindElements(todayTrendingDeals);
         private IReadOnlyCollection<IWebElement> StaffPicksTitleElements => Driver.FindElements(By.CssSelector("div[class=staff-pick] a p.title"));
+        private IReadOnlyCollection<IWebElement> StaffPicksDiv => Driver.FindElements(By.CssSelector("div[class='staff-pick'] a"));
 
         private IWebDriver Driver { get; }
 
@@ -47,11 +45,13 @@ namespace CouponFollowRecruitmentTask.Pages
         {
             var elements = Driver.FindElements(By.CssSelector("div[class='staff-pick'] a"));
             //elements should be unique
-            return elements.Select(x => x.GetDomAttribute("data-domain")).ToList();
+            return elements.Select(x => x.GetDomAttribute(dataDomain)).ToList();
         }
 
         internal IEnumerable<double> GetPercentElementsValuesOnStaffPicks()
         {
+
+            //This should be changed to be able to verify values with values with fractions
             var searchPattern = @"\S?\d+";
 
             var textValues = StaffPicksTitleElements.Select(x => x.Text.ToLowerInvariant());
@@ -62,33 +62,42 @@ namespace CouponFollowRecruitmentTask.Pages
             return parsed;
         }
 
-        internal IEnumerable<double> GetMonetaryElementsValuesOnStaffPicks()
+        private Dictionary<string, string> GetStaffPicksDetails()
         {
-            List<double> results = new List<double>();
-
-            var staffPicksDiv = Driver.FindElements(By.CssSelector("div[class='staff-pick'] a"));
-            foreach (var staffPick in staffPicksDiv)
+            Dictionary<string, string> staffPicksDetails = new Dictionary<string, string>();
+            foreach (var staffPick in StaffPicksDiv)
             {
-                var couponTitle = staffPick.FindElement(By.CssSelector("p.title"));
-                var couponDomain = staffPick.GetDomAttribute("data-domain");
+                var couponTitle = staffPick.FindElement(couponTitleLocator);
+                var couponDomain = staffPick.GetDomAttribute(dataDomain);
                 var titleText = couponTitle.Text.ToLower();
                 if (string.IsNullOrEmpty(titleText))
                     throw new Exception($"Coupon for {couponDomain} has missing title");
+                staffPicksDetails.Add(couponDomain, titleText);
+            }
+            return staffPicksDetails;
+        }
 
+        internal Dictionary<string, double> GetMonetaryElementsValuesOnStaffPicks()
+        {
+            Dictionary<string, double> results = new Dictionary<string, double>();
+
+            var details = GetStaffPicksDetails();
+            foreach (var monetaryElement in details)
+            {
                 //assumption that monetary value will always have dolar sign in tittle(what if it will be false),
                 //maybe should verify based on element type
                 //maybe some functionality is covered by unit-tests?
-                if (Regex.IsMatch(titleText, @"[$]"))
+                if (Regex.IsMatch(monetaryElement.Value, @"[$]"))
                 {
                     double parsed;
-                    titleText = titleText
+                    var titleText = monetaryElement.Value
                         .Replace("$", string.Empty)
                         .Replace("take", string.Empty)
                         .Replace("off", string.Empty).Trim();
 
                     if (!double.TryParse(titleText, out parsed))
-                        throw new Exception($"Value on coupon for '{couponDomain}' has wrong value {titleText}");
-                    results.Add(parsed);
+                        throw new Exception($"Value on coupon for '{monetaryElement.Key}' has wrong value {titleText}");
+                    results.Add(monetaryElement.Key, parsed);
                 }
             }
 
@@ -97,46 +106,35 @@ namespace CouponFollowRecruitmentTask.Pages
 
         public IReadOnlyCollection<IWebElement> GetTodayTrendingDeals() => TrendingDealsElements;
 
-        internal List<string> GetTextElemenetsValuesOnStaffPicks()
+        internal Dictionary<string, string> GetTextElemenetsValuesOnStaffPicks()
         {
-            List<string> results = new List<string>();
-            var staffPicksDiv = Driver.FindElements(By.CssSelector("div[class='staff-pick'] a"));
+            Dictionary<string, string> results = new Dictionary<string, string>();
 
-            foreach (var staffPick in staffPicksDiv)
+            var details = GetStaffPicksDetails();
+            foreach (var titleElement in details)
             {
-                var couponTitle = staffPick.FindElement(By.CssSelector("p.title"));
-                var couponDomain = staffPick.GetDomAttribute("data-domain");
-                var titleText = couponTitle.Text.ToLower();
-                if (string.IsNullOrEmpty(titleText))
-                    throw new Exception($"Coupon for {couponDomain} has missing title");
-                if(!Regex.IsMatch(titleText, @"[$]") && !Regex.IsMatch(titleText, @"%"))
+                if (!Regex.IsMatch(titleElement.Value, @"[$]") && !Regex.IsMatch(titleElement.Value, @"%"))
                 {
-                    results.Add(titleText);
+                    results.Add(titleElement.Key, titleElement.Value);
                 }
             }
 
             return results;
         }
 
-        internal List<string> GetNotMatchingCoupons()
+        internal Dictionary<string, string> GetNotMatchingCoupons()
         {
-            List<string> results = new List<string>();
-            var staffPicksDiv = Driver.FindElements(By.CssSelector("div[class='staff-pick'] a"));
+            Dictionary<string, string> results = new Dictionary<string, string>();
 
-            foreach (var staffPick in staffPicksDiv)
+            var details = GetStaffPicksDetails();
+            foreach (var titleElement in details)
             {
-                var couponTitle = staffPick.FindElement(By.CssSelector("p.title"));
-                var couponDomain = staffPick.GetDomAttribute("data-domain");
-                var titleText = couponTitle.Text.ToLower();
-                if (string.IsNullOrEmpty(titleText))
-                    throw new Exception($"Coupon for {couponDomain} has missing title");
-
                 //assumptions based on coupons found on main page, maybe on Staff Picks ther are presented in different way
                 //need to verify with User Story of that feature
-                if (!Regex.IsMatch(titleText, @"[$]") && !Regex.IsMatch(titleText, @"%")
-                    && !titleText.Contains("save") && !titleText.Contains("free"))
+                if (!Regex.IsMatch(titleElement.Value, @"[$]") && !Regex.IsMatch(titleElement.Value, @"%")
+                    && !titleElement.Value.Contains("save") && !titleElement.Value.Contains("free"))
                 {
-                    results.Add(titleText);
+                    results.Add(titleElement.Key, titleElement.Value);
                 }
             }
             return results;

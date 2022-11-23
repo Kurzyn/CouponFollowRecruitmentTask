@@ -55,11 +55,12 @@ namespace CouponFollowRecruitmentTask
             //App/Testig environmet should be initialized with data for verification.
             //Right now tests will be failing if there is no Coupon with Monetary discount that goes for every coupon type
             mainPage.OpenMainPage();
-
-            foreach (double value in mainPage.GetMonetaryElementsValuesOnStaffPicks())
+            var coupons = mainPage.GetMonetaryElementsValuesOnStaffPicks();
+            coupons.Should().NotBeNullOrEmpty();
+            foreach (var coupon in coupons)
             {
                 //assumtion that coupons are in such range - should confirm that
-                value.Should().BeInRange(1, 500);
+                coupon.Value.Should().BeInRange(1, 500, $"that's satisfactory range for {coupon.Key}");
             }
         }
 
@@ -71,7 +72,7 @@ namespace CouponFollowRecruitmentTask
             //App/Testig environmet should be initialized with data for verification.
             //Right now tests will be failing if there is no Coupon with Percentage discount that goes for every coupon type
             mainPage.OpenMainPage();
-            foreach(double coupon  in mainPage.GetPercentElementsValuesOnStaffPicks())
+            foreach (double coupon in mainPage.GetPercentElementsValuesOnStaffPicks())
             {
                 coupon.Should().BeInRange(1, 100);
             }
