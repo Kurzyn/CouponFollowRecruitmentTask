@@ -9,6 +9,8 @@ namespace CouponFollowRecruitmentTask.Infrastructure
     {
         protected override IWebDriver CreateInstance(IContext context)
         {
+            var element = ConfigurationHelper.Configuration["BrowserConfiguration:BrowserType"];
+
             var options = CreateChromeOptions();
             return new ChromeDriver(options);
         }
