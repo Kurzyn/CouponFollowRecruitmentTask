@@ -1,6 +1,7 @@
 ﻿using Ninject.Activation;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Interactions;
 
 namespace CouponFollowRecruitmentTask.Infrastructure
 {
@@ -8,7 +9,15 @@ namespace CouponFollowRecruitmentTask.Infrastructure
     {
         protected override IWebDriver CreateInstance(IContext context)
         {
-            return new ChromeDriver();
+            var options = CreateChromeOptions();
+            return new ChromeDriver(options);
+        }
+
+        private ChromeOptions CreateChromeOptions()
+        {
+            var options = new ChromeOptions();
+            //options.EnableMobileEmulation("iPhone 12 Pro");
+            return options;
         }
     }
 }
