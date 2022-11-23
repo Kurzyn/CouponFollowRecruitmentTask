@@ -28,7 +28,7 @@ namespace CouponFollowRecruitmentTask
             mainPage.OpenMainPage();
 
             mainPage.GetCouponsCountFromCarusel().Should().BeOneOf(new[] { 3, 6, 9 });
-            mainPage.GetDisplayedCouponsFromCarusel();
+           //mainPage.GetDisplayedCouponsFromCarusel();
         }
 
         [TestMethod]

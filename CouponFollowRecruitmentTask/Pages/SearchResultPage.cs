@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using CouponFollowRecruitmentTask.Infrastructure;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
@@ -21,9 +22,13 @@ namespace CouponFollowRecruitmentTask.Pages
         {
             WebDriverWait webDriverWait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
             webDriverWait.Until(drv => ((IJavaScriptExecutor)drv).ExecuteScript("return document.readyState").Equals("complete"));
-            //ifology
-            var deals = Driver.FindElements(By.CssSelector("section article.type-deal"));
-            //mobile var deals = Driver.FindElements(By.CssSelector("div.deal a.couponUrl"));
+            IReadOnlyCollection<IWebElement> deals;
+            if (ConfigurationHelper.BrowserConfiguration.EnableMobile)
+            {
+                deals = Driver.FindElements(By.CssSelector("div.deal a.couponUrl"));
+            }
+            else
+                deals = Driver.FindElements(By.CssSelector("section article.type-deal"));
             deals.First().Click();
             Driver.SwitchTo().Window(Driver.WindowHandles.Last());
         }

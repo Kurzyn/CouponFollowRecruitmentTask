@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using CouponFollowRecruitmentTask.Infrastructure;
+using OpenQA.Selenium;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
@@ -155,16 +156,19 @@ namespace CouponFollowRecruitmentTask.Pages
 
         internal void SearchForCoupon(string couponDomain)
         {
-            //ifology for mobile
-            //SearchMobile(couponDomain);
-            SearchInput.Click();
-            SearchInput.SendKeys(couponDomain);
+            if (ConfigurationHelper.BrowserConfiguration.EnableMobile)
+                SearchMobile(couponDomain);
+            else
+            {
+                SearchInput.Click();
+                SearchInput.SendKeys(couponDomain);
 
-            WebDriverWait webDriverWait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
-            webDriverWait.Until(ExpectedConditions.ElementExists(By.CssSelector("li a[data-domain]")));
-            Driver.FindElement(By.CssSelector("li a[data-domain]")).Click();
-            Driver.SwitchTo().Window(Driver.WindowHandles.Last());
-            SearchInput.SendKeys(Keys.Enter);
+                WebDriverWait webDriverWait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
+                webDriverWait.Until(ExpectedConditions.ElementExists(By.CssSelector("li a[data-domain]")));
+                Driver.FindElement(By.CssSelector("li a[data-domain]")).Click();
+                Driver.SwitchTo().Window(Driver.WindowHandles.Last());
+                SearchInput.SendKeys(Keys.Enter);
+            }
         }
 
         private void SearchMobile(string couponDomain)
