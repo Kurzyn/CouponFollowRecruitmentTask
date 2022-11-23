@@ -50,14 +50,18 @@ namespace CouponFollowRecruitmentTask.Pages
 
         internal IEnumerable<double> GetPercentElementsValuesOnStaffPicks()
         {
-
-            //This should be changed to be able to verify values with values with fractions
-            var searchPattern = @"\S?\d+";
+            //that patter is partially true
+            var searchPattern = @"\S?\d+(.\d+)?";
 
             var textValues = StaffPicksTitleElements.Select(x => x.Text.ToLowerInvariant());
             var percentsValues = textValues.Where(x => Regex.IsMatch(x, @"[%]"));
             var cleanedUpValues = percentsValues.Select(x => x.Replace("save", string.Empty).Replace("off", string.Empty).Trim());
-            var parsed = cleanedUpValues.Select(x => double.Parse(Regex.Match(x, searchPattern).Value));
+            var parsed = cleanedUpValues.Select(x =>
+            {
+                if (double.TryParse(Regex.Match(x, searchPattern).Value, out double percetnage))
+                    throw new Exception($"Value on coupon is '{x}' and it's wrong for percetage type discount");
+                return percetnage;
+            });
 
             return parsed;
         }
@@ -129,7 +133,7 @@ namespace CouponFollowRecruitmentTask.Pages
             var details = GetStaffPicksDetails();
             foreach (var titleElement in details)
             {
-                //assumptions based on coupons found on main page, maybe on Staff Picks ther are presented in different way
+                //assumptions based on coupons found on main page, maybe on Staff Picks they are presented in different way
                 //need to verify with User Story of that feature
                 if (!Regex.IsMatch(titleElement.Value, @"[$]") && !Regex.IsMatch(titleElement.Value, @"%")
                     && !titleElement.Value.Contains("save") && !titleElement.Value.Contains("free"))
