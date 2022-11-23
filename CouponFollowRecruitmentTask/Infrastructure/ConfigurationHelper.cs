@@ -9,11 +9,19 @@ namespace CouponFollowRecruitmentTask.Infrastructure
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
-
             return configuration;
         }
-        //public static BrowserConfiguration BrowserConfig => Configuration.GetSection(nameof(BrowserConfiguration));
+
+        static ConfigurationHelper()
+        {
+            browserConfiguration = new();
+            Configuration.GetSection(nameof(BrowserConfiguration)).Bind(browserConfiguration);
+        }
+
         public static IConfiguration Configuration => GetConfigurationForTests();
 
+        public static BrowserConfiguration BrowserConfiguration { get => browserConfiguration; private set => browserConfiguration = value; }
+
+        private static BrowserConfiguration browserConfiguration;
     }
 }

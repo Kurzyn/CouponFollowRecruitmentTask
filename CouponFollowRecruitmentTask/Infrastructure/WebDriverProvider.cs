@@ -1,25 +1,39 @@
 ﻿using Ninject.Activation;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Safari;
 
 namespace CouponFollowRecruitmentTask.Infrastructure
 {
     internal class WebDriverProvider : Provider<IWebDriver>
     {
+
         protected override IWebDriver CreateInstance(IContext context)
         {
-            var element = ConfigurationHelper.Configuration["BrowserConfiguration:BrowserType"];
-
-            var options = CreateChromeOptions();
-            return new ChromeDriver(options);
+            switch (ConfigurationHelper.BrowserConfiguration.BrowserType)
+            {
+                case BrowserType.Chrome:
+                    return new ChromeDriver(CreateChromeOptions());
+                case BrowserType.Safari:
+                    throw new NotImplementedException();
+                case BrowserType.Firefox:
+                    throw new NotImplementedException();
+                default: throw new NotImplementedException();
+            };
         }
 
         private ChromeOptions CreateChromeOptions()
         {
             var options = new ChromeOptions();
-            //options.EnableMobileEmulation("iPhone 12 Pro");
+            if(ConfigurationHelper.BrowserConfiguration.EnableMobile)
+                options.EnableMobileEmulation(ConfigurationHelper.BrowserConfiguration.DeviceName);
             return options;
+        }
+
+        private SafariOptions CreateSafariOptions()
+        {
+            //safari options setup can be done here
+            return new SafariOptions();
         }
     }
 }

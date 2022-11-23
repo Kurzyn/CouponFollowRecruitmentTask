@@ -4,6 +4,6 @@
     {
         public BrowserType BrowserType { get; set; }
         public bool EnableMobile { get; set; }
-        public string? EnabledDevice { get; set; }
+        public string? DeviceName { get; set; }
     }
 }
