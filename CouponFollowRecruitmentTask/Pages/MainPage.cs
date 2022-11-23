@@ -1,5 +1,4 @@
-﻿using CouponFollowRecruitmentTask.Infrastructure;
-using OpenQA.Selenium;
+﻿using CouponFollowRecruitmentTask.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
@@ -24,13 +23,13 @@ namespace CouponFollowRecruitmentTask.Pages
         private IReadOnlyCollection<IWebElement> StaffPicksTitleElements => Driver.FindElements(By.CssSelector("div[class=staff-pick] a p.title"));
         private IReadOnlyCollection<IWebElement> StaffPicksDiv => Driver.FindElements(By.CssSelector("div[class='staff-pick'] a"));
 
-        private IWebElement SearchInput => Driver.FindElement(By.CssSelector("input[data-func=openSearch]"));
-
         private IWebDriver Driver { get; }
+        private ISearchForCoupon MainSearch { get; }
 
-        public MainPage(IWebDriver driver)
+        public MainPage(IWebDriver driver, ISearchForCoupon mainSearch)
         {
             Driver = driver;
+            MainSearch = mainSearch;
         }
 
         public void OpenMainPage()
@@ -154,32 +153,9 @@ namespace CouponFollowRecruitmentTask.Pages
 
         internal string GetCurrentUrl() => Driver.Url;
 
-        internal void SearchForCoupon(string couponDomain)
+        public void SearchForCoupon(string couponDomain)
         {
-            if (ConfigurationHelper.BrowserConfiguration.EnableMobile)
-                SearchMobile(couponDomain);
-            else
-            {
-                SearchInput.Click();
-                SearchInput.SendKeys(couponDomain);
-
-                WebDriverWait webDriverWait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
-                webDriverWait.Until(ExpectedConditions.ElementExists(By.CssSelector("li a[data-domain]")));
-                Driver.FindElement(By.CssSelector("li a[data-domain]")).Click();
-                Driver.SwitchTo().Window(Driver.WindowHandles.Last());
-                SearchInput.SendKeys(Keys.Enter);
-            }
-        }
-
-        private void SearchMobile(string couponDomain)
-        {
-            Driver.FindElement(By.CssSelector("button#openSearch")).Click();
-            Driver.FindElement(By.CssSelector("input.mobile-search-input")).SendKeys(couponDomain);
-
-            WebDriverWait webDriverWait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
-            webDriverWait.Until(ExpectedConditions.ElementExists(By.CssSelector("li a[data-domain]")));
-            Driver.FindElement(By.CssSelector("li a[data-domain]")).Click();
-            Driver.SwitchTo().Window(Driver.WindowHandles.Last());
+            MainSearch.SearchForCoupon(couponDomain);
         }
     }
 }

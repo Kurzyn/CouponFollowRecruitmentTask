@@ -1,4 +1,5 @@
 using CouponFollowRecruitmentTask.Pages;
+using CouponFollowRecruitmentTask.Pages.Mobile;
 using FluentAssertions;
 using Ninject;
 

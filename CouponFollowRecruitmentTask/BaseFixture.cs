@@ -8,6 +8,12 @@ namespace CouponFollowRecruitmentTask
     {
         public IKernel kernel = new StandardKernel(new BrowserModule());
 
+        [TestInitialize]
+        public void InitPages()
+        {
+            kernel.Load(new PagesModule());
+        }
+
         [TestCleanup]
         public void CleanUp()
         {
