@@ -1,7 +1,6 @@
-﻿using CouponFollowRecruitmentTask.Interfaces;
+﻿using CouponFollowRecruitmentTask.Infrastructure;
+using CouponFollowRecruitmentTask.Interfaces;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
-using SeleniumExtras.WaitHelpers;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -34,7 +33,7 @@ namespace CouponFollowRecruitmentTask.Pages
 
         public void OpenMainPage()
         {
-            Driver.Navigate().GoToUrl("https://couponfollow.com");
+            Driver.Navigate().GoToUrl(ConfigurationHelper.AppDetails.Uri);
         }
 
         public int GetCouponsCountFromCarusel()
@@ -62,7 +61,7 @@ namespace CouponFollowRecruitmentTask.Pages
             var textValues = StaffPicksTitleElements.Select(x => x.Text.ToLowerInvariant());
             var percentsValues = textValues.Where(x => Regex.IsMatch(x, @"[%]"));
             var cleanedUpValues = percentsValues.Select(x => x.Replace("save", string.Empty).Replace("off", string.Empty).Trim());
-            foreach(var x in cleanedUpValues)
+            foreach (var x in cleanedUpValues)
             {
                 if (!double.TryParse(Regex.Match(x, searchPattern).Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double percetnage))
                     throw new Exception($"Value on coupon is '{x}' and it's wrong for percetage type discount");

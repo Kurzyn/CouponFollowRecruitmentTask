@@ -1,9 +1,7 @@
-﻿using Ninject.Modules;
-using OpenQA.Selenium;
-
-using Mobile = CouponFollowRecruitmentTask.Pages.Mobile;
+﻿using CouponFollowRecruitmentTask.Interfaces;
+using Ninject.Modules;
 using Desktop = CouponFollowRecruitmentTask.Pages.Desktop;
-using CouponFollowRecruitmentTask.Interfaces;
+using Mobile = CouponFollowRecruitmentTask.Pages.Mobile;
 
 namespace CouponFollowRecruitmentTask.Infrastructure
 {

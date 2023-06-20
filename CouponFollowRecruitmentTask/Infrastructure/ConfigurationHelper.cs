@@ -14,14 +14,14 @@ namespace CouponFollowRecruitmentTask.Infrastructure
 
         static ConfigurationHelper()
         {
-            browserConfiguration = new();
-            Configuration.GetSection(nameof(BrowserConfiguration)).Bind(browserConfiguration);
+            BrowserConfiguration = Configuration.GetSection(nameof(BrowserConfiguration)).Get<BrowserConfiguration>();
+            AppDetails = Configuration.GetRequiredSection(nameof(AppDetails)).Get<AppDetails>();
         }
 
         public static IConfiguration Configuration => GetConfigurationForTests();
 
-        public static BrowserConfiguration BrowserConfiguration { get => browserConfiguration; private set => browserConfiguration = value; }
+        public static BrowserConfiguration BrowserConfiguration { get; set; }
 
-        private static BrowserConfiguration browserConfiguration;
+        public static AppDetails AppDetails { get; set; }
     }
 }

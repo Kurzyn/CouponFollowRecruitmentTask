@@ -1,11 +1,6 @@
-﻿using CouponFollowRecruitmentTask.Infrastructure;
-using CouponFollowRecruitmentTask.Interfaces;
+﻿using CouponFollowRecruitmentTask.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CouponFollowRecruitmentTask.Pages.Desktop
 {

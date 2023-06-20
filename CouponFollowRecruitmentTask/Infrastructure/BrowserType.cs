@@ -2,5 +2,6 @@
 {
     Chrome,
     Safari,
-    Firefox
+    Firefox,
+    Remote
 }

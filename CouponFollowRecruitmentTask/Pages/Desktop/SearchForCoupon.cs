@@ -1,19 +1,14 @@
-﻿using OpenQA.Selenium.Support.UI;
+﻿using CouponFollowRecruitmentTask.Interfaces;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CouponFollowRecruitmentTask.Interfaces;
 
 namespace CouponFollowRecruitmentTask.Pages.Desktop
 {
     internal class SearchForCouponPage : ISearchForCoupon
     {
         private IWebElement SearchInput => Driver.FindElement(By.CssSelector("input[data-func=openSearch]"));
-        
+
         private IWebDriver Driver { get; }
 
         public SearchForCouponPage(IWebDriver driver)
